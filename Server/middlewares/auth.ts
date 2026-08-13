@@ -40,7 +40,14 @@ export const adminonly = (req:Authrequest , res:Response , next:NextFunction) =>
         next();
     }
     else{
-
+        res.status(401).json({message:"Not accessible , only admin id required"});
     }
-
+}
+export const owneronly = (req:Authrequest , res:Response , next:NextFunction) => {
+    if(req.user && (req.user.role==="owner" || req.user.role==="admin" )){
+        next();
+    }
+    else{
+        res.status(401).json({message:"Not accessible , only admin id / owner id required"});
+    }
 }

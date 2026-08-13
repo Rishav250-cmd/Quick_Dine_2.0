@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import {  user } from "../models/users.js";
 import bcrypt from "bcrypt"
+import { Authrequest } from "../middlewares/auth.js";
 
 const generatetoken  = (id:String)=> {
     return jwt .sign({id} , process.env.JWT_SECRET as string , {expiresIn : "30d"})
@@ -85,11 +86,17 @@ export const loginuser = async (req: Request , res : Response): Promise<void> =>
      
 }
 
-export const getme = async (req: Request , res : Response): Promise<void> => {
+export const getme = async (req: Authrequest & {user?: any} , res : Response): Promise<void> => {
     try {
+        if(!req.user ){
+            res.status(401).json({message : "User not authenticated"});
+            return;
+        }
+        res.json(req.user);
         
-    } catch (error) {
-        
+    } catch (error: any) {
+        console.log(error);
+        res.status(400).json({message:error.message});
     }
      
 }
