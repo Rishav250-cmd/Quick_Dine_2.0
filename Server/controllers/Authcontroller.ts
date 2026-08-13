@@ -42,8 +42,8 @@ export const registeruser = async (req: Request , res : Response): Promise<void>
         }
     } 
     catch (error : any ) {
-        console.log(error);
-        res.status(400).json({message:error.message});
+            console.log(error);
+            res.status(400).json({message:error.message});
         
         
     }
@@ -52,8 +52,34 @@ export const registeruser = async (req: Request , res : Response): Promise<void>
 
 export const loginuser = async (req: Request , res : Response): Promise<void> => {
     try {
+        const { email , password } = req.body;
+        if( !email || !password){
+            res.status(400).json({message : "Please enter the detail"})
+            return; 
+        }
+        const User = await user.findOne({email})
         
-    } catch (error) {
+        if(!User){
+            res.status(401).json({message:"invalid email or password"});
+            return ;
+        }
+        const ismatch = await bcrypt.compare(password, String(User.password) || "");
+        if(!ismatch){
+            res.status(401).json({message:"invalid password"})
+            return ; 
+        }
+        res.json({
+        _id : User._id,
+        name: User.name,
+        email : User.email,
+        phone : User.phone,
+        role : User.role,
+        token : generatetoken(User._id.toString())
+        })
+        
+    } catch (error:any) {
+        console.log(error);
+        res.status(400).json({message:error.message});
         
     }
      
