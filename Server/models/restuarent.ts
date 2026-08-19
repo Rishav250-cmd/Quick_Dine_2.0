@@ -53,4 +53,4 @@ const RestuarentSchema = new Schema<IRestuarent>(
 )
 
 
-export const Restuarent = model<IRestuarent>("user" , RestuarentSchema)
+export const Restuarent = model<IRestuarent>("Restuarent" , RestuarentSchema)
