@@ -59,6 +59,8 @@ export const createownerRestuarent = async(req:Authrequest , res:Response):Promi
 
         let imageurl = "";
         if(req.file){
+            const result = await uploadToCloudinary(req.file.buffer);
+            imageurl=result.secure_url
             //handle image upload
         }
         //setup parsed tags and slot 
@@ -76,7 +78,36 @@ export const createownerRestuarent = async(req:Authrequest , res:Response):Promi
 }
 export const updateownerRestuarent = async(req:Authrequest , res:Response):Promise<void>=>{
     try {
+        const restuarant = await Restuarent.findOne({owner : req.user?._id})
+        if(!restuarant){
+            res.status(404).json({message:"restuarent not found"});
+            return;
+        }
+        const { name, description, cuisine, priceRange, location, address, chef, tags, availableSlots, totalseats } = req.body;
+        if (name) restuarant.name = name;
+        if (description) restuarant.description = description;
+        if (cuisine) restuarant.cuisine = cuisine;
+        if (priceRange) restuarant.priceRange = priceRange;
+        if (location) restuarant.location = location;
+        if (address) restuarant.address = address;
+        if (chef) restuarant.chef = chef;
+        if (totalseats) restuarant.totalseats = Number(totalseats);
+
+        if (tags) {
+        restuarant.tags = typeof tags === "string" 
+            ? tags.split(",").map((t) => t.trim()) 
+            : tags;
+        };
+        if (availableSlots) restuarant.availableSlots = typeof availableSlots === "string" ? availableSlots.split(",").map((s) => s.trim()) : availableSlots;
+        //handle new image uploading 
         
+        if(req.file){
+            const result = await uploadToCloudinary(req.file.buffer);
+            restuarant.image=result.secure_url
+            //handle image upload
+        }
+        const updated = await restuarant.save();
+
     } catch (error:any) {
         console.log(error)
         res.status(400).json({message:error.message})
@@ -85,6 +116,12 @@ export const updateownerRestuarent = async(req:Authrequest , res:Response):Promi
 }
 export const getownerbooking = async(req:Authrequest , res:Response):Promise<void>=>{
     try {
+        const restuarant = await Restuarent.findOne({owner : req.user?._id})
+        if(!restuarant){
+            res.status(404).json({message:"restuarent not found"});
+            return;
+        }
+        const booking  = 
         
     } catch (error:any) {
         console.log(error)
