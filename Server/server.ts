@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRouter from "./routes/authroutes.js";
 import restuarentRoutes from "./routes/restaurentroutes.js";
 import bookingrouter from "./routes/bookingroutes.js";
+import ownerrouter from "./routes/ownerroutes.js";
 
 const app = express();
 await connectDB();
@@ -21,6 +22,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth" , authRouter);
 app.use("/api/restuarent" , restuarentRoutes);
 app.use("/api/booking" , bookingrouter);
+app.use("/api/owner" , ownerrouter);
 
 
 
@@ -31,7 +33,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
         stack:process.env.NODE_ENV == "production" ? undefined:err.stack
      });
 });
-
+console.log("before listen")
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });

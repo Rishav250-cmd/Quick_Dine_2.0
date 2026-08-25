@@ -2,6 +2,9 @@ import { Response } from "express";
 import { Authrequest } from "../middlewares/auth.js";
 import { Restuarent } from "../models/restuarent.js";
 import {v2 as cloudinary} from "cloudinary"
+import { Booking } from "../models/booking.js";
+import { time } from "node:console";
+import { stat } from "node:fs";
 
 //helper function to upload buffer to cloudinary 
 const uploadToCloudinary = (fileBuffer: Buffer): Promise<{ secure_url: string }> => {
@@ -32,7 +35,6 @@ export const getownerRestuarent = async(req:Authrequest , res:Response):Promise<
         res.status(400).json({message:error.message})
     }
 }
-
 export const createownerRestuarent = async(req:Authrequest , res:Response):Promise<void>=>{
     try {
         const existing = await Restuarent.findOne({owner:req.user?._id})
@@ -107,6 +109,7 @@ export const updateownerRestuarent = async(req:Authrequest , res:Response):Promi
             //handle image upload
         }
         const updated = await restuarant.save();
+        res.json(updated)
 
     } catch (error:any) {
         console.log(error)
@@ -121,8 +124,8 @@ export const getownerbooking = async(req:Authrequest , res:Response):Promise<voi
             res.status(404).json({message:"restuarent not found"});
             return;
         }
-        const booking  = 
-        
+        const booking  = await Booking.find({restaurant:restuarant._id}).populate("user" , "name email phone").sort({date:-1 , time:-1})
+        res.json(booking)
     } catch (error:any) {
         console.log(error)
         res.status(400).json({message:error.message})
@@ -131,7 +134,24 @@ export const getownerbooking = async(req:Authrequest , res:Response):Promise<voi
 }
 export const updatebookingstatus = async(req:Authrequest , res:Response):Promise<void>=>{
     try {
-        
+        const {status} = req.body;
+        if(!status || !["confirmed", "cancelled", "completed"].includes(status)){
+            res.status(400).json({message:"please enter a valid booking status"})
+            return ;
+        }
+        const booking = await Booking.findById(req.params.id)
+        if(!booking){
+            res.status(400).json({message:"booking not found"})
+            return ;
+        }
+        const restuarent= await Restuarent.findById(booking.restaurant)
+        if (!restuarent || restuarent.owner.toString() !== req.user?._id.toString()) {
+            res.status(401).json({message:"Not authorized to edit this booking"})
+        }
+        booking.status=status ;
+        await booking.save();
+        res.json(booking)
+
     } catch (error:any) {
         console.log(error)
         res.status(400).json({message:error.message})
