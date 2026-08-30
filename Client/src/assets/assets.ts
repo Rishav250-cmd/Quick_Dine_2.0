@@ -91,9 +91,9 @@ export const cuisines = [
 
 export const dummyUser = {
     _id: "6a32a3c50e88c825d8873f75",
-    name: "Alex Mercer",
-    email: "alex@example.com",
-    phone: "+01234567788",
+    name: "Rishav",
+    email: "rishav@example.com",
+    phone: "+8969674434",
     role: "owner",
     token: "xyz",
     createdAt: "2026-06-17T13:40:21.669Z",
