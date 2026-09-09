@@ -23,11 +23,11 @@ export default function OwnerDashboard() {
     const fetchOwnerData = async () => {
         try {
             setLoading(true)
-            const res = await api.get("/owner/restuarent")
+            const res = await api.get("/owner/restaurant")
             setRestaurant(res.data)
             if(res.data){
                 if(res.data.status==="approved"){
-                    const bookingres = await api.get("/owner/booking")
+                    const bookingres = await api.get("/owner/bookings")
                     setBookings(bookingres.data);
                 }
             }
@@ -118,7 +118,7 @@ export default function OwnerDashboard() {
                         <div className="lg:col-span-9 space-y-8">
                             {/* Tab 1: Bookings List */}
                             {activeTab === "bookings" && (
-                                <OwnerBookings bookings={bookings} setBookings={setBookings} totalSeats={restaurant.totalSeats} />
+                                <OwnerBookings bookings={bookings} setBookings={setBookings} totalSeats={restaurant.totalseats}/>
                             )}
 
                             {/* Tab 3: Update details & slots capacity */}
