@@ -9,7 +9,8 @@ import { ShieldCheckIcon, CheckCircleIcon, BarChart3Icon } from "lucide-react";
 // Subcomponents
 import AdminApprovals from "../../components/admin/AdminApprovals.tsx";
 import AdminStats from "../../components/admin/AdminStats.tsx";
-import { dummyAdminStats, dummyRestaurant } from "../../assets/assets.ts";
+import api from "../../lib/api.ts";
+import toast from "react-hot-toast";
 
 export default function AdminDashboard() {
     const { logout } = useAppContext();
@@ -20,14 +21,28 @@ export default function AdminDashboard() {
     const [btnLoading, setBtnLoading] = useState<string | null>(null);
 
     const fetchAdminData = async () => {
-        setRestaurants(dummyRestaurant);
-        setStats(dummyAdminStats);
-        setLoading(false);
+        try {
+            setLoading(true)
+            const res = await api.get("/admin/restuarent")
+            setRestaurants(res.data)
+
+            const statres =await api.get("/admin/stats")
+            setStats(statres.data);
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message || "unable to fetch");
+        }finally{
+            setLoading(false)
+        }
     };
 
     const handleApproveStatus = async (restaurantId: string, status: "approved" | "rejected") => {
-        console.log(restaurantId, status);
-        setBtnLoading(null);
+        try {
+            setBtnLoading(restaurantId)
+            await api.put(`/admin/`)
+            
+        } catch (error:any) {
+            toast.error(error?.response?.data?.message || "Update failed");
+        }
     };
 
     useEffect(() => {
