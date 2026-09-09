@@ -38,10 +38,18 @@ export default function AdminDashboard() {
     const handleApproveStatus = async (restaurantId: string, status: "approved" | "rejected") => {
         try {
             setBtnLoading(restaurantId)
-            await api.put(`/admin/`)
-            
+            await api.put(`/admin/restuarent/${restaurantId}/approve` ,{status})
+            toast.success(`Restaurent marked as ${status.toUpperCase()}`)
+
+            //reload local list and stats
+            const rRes = await api.get("/admin/restuarent")
+            setRestaurants(rRes.data)
+            const statres =await api.get("/admin/stats")
+            setStats(statres.data);
         } catch (error:any) {
             toast.error(error?.response?.data?.message || "Update failed");
+        }finally{
+            setBtnLoading(null)
         }
     };
 
