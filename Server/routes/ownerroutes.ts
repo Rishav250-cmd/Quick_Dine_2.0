@@ -1,34 +1,23 @@
 import { Router } from "express";
-import multer from "multer";
 
 import {
     getownerRestuarent,
     createownerRestuarent,
     updateownerRestuarent,
     getownerbooking,
-    updatebookingstatus,
+    updatebookingstatus
 } from "../controllers/ownercontroller.js";
 
-import { protect, owneronly } from "../middlewares/auth.js";
+import upload from "../config/multer.js";
+import { owneronly, protect } from "../middlewares/auth.js";
 
 const ownerrouter = Router();
 
-// Multer configuration
-const upload = multer({
-    storage: multer.memoryStorage(),
-});
-
-// All owner routes require authentication
 ownerrouter.use(protect);
-
-// All owner routes require owner role
 ownerrouter.use(owneronly);
 
-// Restaurant routes
-ownerrouter.get(
-    "/restaurant",
-    getownerRestuarent
-);
+// Restaurant
+ownerrouter.get("/restaurant", getownerRestuarent);
 
 ownerrouter.post(
     "/restaurant",
@@ -42,11 +31,8 @@ ownerrouter.put(
     updateownerRestuarent
 );
 
-// Booking routes
-ownerrouter.get(
-    "/bookings",
-    getownerbooking
-);
+// Bookings
+ownerrouter.get("/bookings", getownerbooking);
 
 ownerrouter.put(
     "/bookings/:id/status",
