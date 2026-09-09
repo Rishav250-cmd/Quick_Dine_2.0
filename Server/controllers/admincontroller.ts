@@ -46,7 +46,7 @@ export const getadminstats = async (req:Authrequest , res : Response):Promise<vo
         const totalowner  =await user.countDocuments({role:"owner"})
         const totalbooking = await Booking.countDocuments({})
         const totalRestuarent = await Restuarent.countDocuments({})
-        const latestbooking = await Booking.find({}).populate("user" , "name email").populate("restaurent" ,"name").sort({createdAt:-1}).limit(10)
+        const latestbooking = await Booking.find({}).populate("user" , "name email").populate("restaurant" ,"name").sort({createdAt:-1}).limit(10)
         
         res.json({
             user:{

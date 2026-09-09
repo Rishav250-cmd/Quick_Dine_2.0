@@ -22,7 +22,7 @@ const seeddata = async () => {
 
         const salt = await bcrypt.genSalt(10);
         const adminpassword = await bcrypt.hash("admin123" , salt)
-        const ownerpassword = await bcrypt.hash("aowner123" , salt)
+        const ownerpassword = await bcrypt.hash("owner123" , salt)
         const userpassword = await bcrypt.hash("user123" , salt)
 
         //admin
@@ -30,7 +30,7 @@ const seeddata = async () => {
             name : "Rishav_Dev",
             email:"rishavdev.05@gmail.com",
             role:"admin",
-            password: adminpassword ,
+            password: adminpassword,
             phone:"8969674434 "
         }) 
         const testuser = await user.create({
@@ -44,7 +44,7 @@ const seeddata = async () => {
             name : "Dubaihabibi",
             email:"dubai.07@gmail.com",
             role:"owner",
-            password: "ownerpassword" ,
+            password: ownerpassword ,
             phone:"777777777 "
         }) 
         console.log("creating restuarent....")

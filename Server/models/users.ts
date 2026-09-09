@@ -30,4 +30,7 @@ userSchema.set("toJSON" , {
     }
 })
 
-export const user = model<IUser>("user" , userSchema)
+// References in Booking and Restuarent schemas use the conventional `User`
+// model name. Mongoose model names are case-sensitive, so the registration
+// must use the identical name for populate() to work.
+export const user = model<IUser>("User" , userSchema)

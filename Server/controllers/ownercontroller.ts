@@ -8,14 +8,31 @@ import { stat } from "node:fs";
 
 //helper function to upload buffer to cloudinary 
 const uploadToCloudinary = (fileBuffer: Buffer): Promise<{ secure_url: string }> => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream({ folder: "QuickDine" }, (error, result) => {
-      if (error) return reject(error);
-      if (!result) return reject(new Error("Upload failed"));
-      resolve({ secure_url: result.secure_url });
+    return new Promise((resolve, reject) => {
+
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: "QuickDine" },
+            (error, result) => {
+
+                if (error) {
+                    console.error("🔥 CLOUDINARY ERROR:", error);
+                    return reject(error);
+                }
+
+                if (!result) {
+                    console.error("🔥 CLOUDINARY: No result returned");
+                    return reject(new Error("Upload failed"));
+                }
+                console.log("✅ CLOUDINARY UPLOAD SUCCESS:", result.secure_url);
+
+                resolve({
+                    secure_url: result.secure_url
+                });
+            }
+        );
+
+        stream.end(fileBuffer);
     });
-    stream.end(fileBuffer);
-  });
 };
 
 
@@ -25,7 +42,9 @@ export const getownerRestuarent = async(req:Authrequest , res:Response):Promise<
     try {
         const restuarent = await Restuarent.findOne({owner:req.user?._id})
         if(!restuarent){
-            res.status(404).json(null)
+            // A new owner has no restaurant profile yet. This is an expected
+            // dashboard state, not a missing API route or an application error.
+            res.json(null)
             return ;
         }
         res.json(restuarent);
