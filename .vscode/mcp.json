@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"CodeRabbit": {
+			"url": "https://docs.coderabbit.ai/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
