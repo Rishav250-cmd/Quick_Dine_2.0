@@ -37,7 +37,7 @@ export const getrestuarent = async(req:Request , res : Response):Promise<void>=>
             sortoption = { priceRange: -1}
         }
         const restuarant = await Restuarent.find(queryOBJ).sort(sortoption)
-        res.json(Restuarent)
+        res.json(restuarant)
         
     } catch (error : any) {
         console.log(error);
