@@ -51,7 +51,7 @@ export default function OwnerProfileDetails({ restaurant, setRestaurant }: Owner
                 setAddress(restaurant.address || "");
                 setChef(restaurant.chef || "");
                 setTags(restaurant.tags?.join(", ") || "");
-                setTotalSeats(restaurant.totalSeats?.toString() || "20");
+                setTotalSeats(restaurant.totalseats?.toString() || "20");
                 setAvailableSlots(restaurant.availableSlots || []);
                 setImagePreview(restaurant.image || "");
                 setImageFile(null); // Reset file selection
