@@ -50,7 +50,7 @@ export default function BookingConfirmation() {
         const fetchRestaurant = async () => {
             try {
                 setLoading(true)
-                const res = await api.get(`/restaurants/${slug}`)
+                const res = await api.get(`/restuarent/${slug}`)
                 setRestaurant(res.data);
             } catch (error:any) {
                 toast.error(error?.response?.data?.message || error?.message);
@@ -81,7 +81,7 @@ export default function BookingConfirmation() {
 
         try {
             setConfirming(true);
-            const res = await api.post(`/booking` , {RestuarantID : restaurant._id , date , time:slot , guests , occasion , specialRequests})
+            const res = await api.post(`/booking` , {restuarentId: restaurant._id , date , time:slot , guests , occasion , specialRequests})
             setConfirmedBooking(res.data);
             toast.success("Reservation confirmed!");
         } catch (error: any) {
