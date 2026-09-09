@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { Authrequest } from "../middlewares/auth.js";
 import { Restuarent } from "../models/restuarent.js";
-import {v2 as cloudinary} from "cloudinary"
+import cloudinary from "../config/cloudinary.js";
 import { Booking } from "../models/booking.js";
 import { time } from "node:console";
 import { stat } from "node:fs";
