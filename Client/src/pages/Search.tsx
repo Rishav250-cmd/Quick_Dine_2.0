@@ -40,7 +40,7 @@ export default function Search() {
         const fetchRestaurants = async () => {
             try {
                 setLoading(true);
-                const res = await api.get(`/restaurants${searchParams.toString()}`)
+                const res = await api.get(`/restuarent${searchParams.toString()}`)
                 setRestaurants(res.data);
             } catch (error:any) {
                 toast.error(error?.response?.data?.message || error?.message);
