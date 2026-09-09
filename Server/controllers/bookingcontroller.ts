@@ -1,104 +1,186 @@
-// create new booking 
-
 import { Response } from "express";
 import { Authrequest } from "../middlewares/auth.js";
 import { Restuarent } from "../models/restuarent.js";
-import { getrestuarentAvailability } from "./Restuarentcontroller.js";
 import { Booking } from "../models/booking.js";
-import { user } from "../models/users.js";
-import { time } from "node:console";
 
-//POST?API?BOOKING
-//access private only 
-
-export const createbooking = async (req: Authrequest, res: Response): Promise<void> => {
+// CREATE BOOKING
+export const createbooking = async (
+    req: Authrequest,
+    res: Response
+): Promise<void> => {
     try {
-        const{restuarentId , date , time,guests ,occasion , specialRequests} = req.body;
+        const {
+            restuarentId,
+            date,
+            time,
+            guests,
+            occasion,
+            specialRequests
+        } = req.body;
 
-        if(!restuarentId || !date || !time || !guests || !occasion || ! specialRequests){
-            res.status(400).json({ message : "please provide information" });  
-            return;         
-        }
-        const restuatent = await Restuarent.findById(restuarentId)
-        if(!restuatent){
-            res.status(404).json({ message : "restuarent not found" });  
-            return;
-        }
-        if(restuatent.status !== "approved"){
-            res.status(400).json({ message : "Restuarent is not open for reservation yet" });  
-            return;
-        }
-
-        const requestedguest = Number(guests)
-
-        const existingbooking = await Booking.find({
-            restuarent : restuarentId,
-            date : new Date(date),
-            time  , 
-            status:"confirmed"
-        })
-        const bookedSeats = existingbooking.reduce((sum, b) => sum + b.guests, 0)
-        const totalseats = restuatent.totalseats || 20 ; 
-        const availableseats = totalseats -bookedSeats ;  
-
-        if(requestedguest>availableseats){
+        if (!restuarentId || !date || !time || !guests || !occasion) {
             res.status(400).json({
-                message: `Unable to reserve. Only ${availableseats} seats are available for this time slot.`,
-            })
+                message: "Please provide all required information"
+            });
+            return;
         }
+
+        const restaurant = await Restuarent.findById(restuarentId);
+
+        if (!restaurant) {
+            res.status(404).json({
+                message: "Restaurant not found"
+            });
+            return;
+        }
+
+        if (restaurant.status !== "approved") {
+            res.status(400).json({
+                message: "Restaurant is not open for reservation yet"
+            });
+            return;
+        }
+
+        const requestedGuests = Number(guests);
+
+        // Check existing bookings
+        const existingBookings = await Booking.find({
+            restaurant: restuarentId,
+            date: new Date(date),
+            time,
+            status: "confirmed"
+        });
+
+        const bookedSeats = existingBookings.reduce(
+            (sum, booking) => sum + booking.guests,
+            0
+        );
+
+        const totalSeats = restaurant.totalseats || 20;
+        const availableSeats = totalSeats - bookedSeats;
+
+        if (requestedGuests > availableSeats) {
+            res.status(400).json({
+                message: `Unable to reserve. Only ${availableSeats} seats are available for this time slot.`
+            });
+            return;
+        }
+
+        // Create booking
         const booking = await Booking.create({
             user: req.user?._id,
             restaurant: restuarentId,
             date: new Date(date),
             time,
-            guests: requestedguest,
+            guests: requestedGuests,
+            occasion,
+            specialRequests,
             status: "confirmed"
+        });
+
+        // Populate restaurant information
+        const populatedBooking = await booking.populate(
+            "restaurant",
+            "name location image address slug"
+        );
+
+        res.status(201).json(populatedBooking);
+
+    } catch (error) {
+        console.log(error);
+
+        const message =
+            error instanceof Error
+                ? error.message
+                : "Something went wrong";
+
+        res.status(400).json({ message });
+    }
+};
+
+
+// GET MY BOOKINGS
+export const getmybooking = async (
+    req: Authrequest,
+    res: Response
+): Promise<void> => {
+    try {
+
+        const bookings = await Booking.find({
+            user: req.user?._id
         })
-        //populate restuarent info before returning 
+            .populate(
+                "restaurant",
+                "name location image address slug"
+            )
+            .sort({
+                date: -1,
+                time: -1
+            });
 
-        const populatebooking = await booking.populate("restuatent" , "name , location , image ,address");
-        res.status(201).json(populatebooking);
-
+        res.json(bookings);
 
     } catch (error) {
+
         console.log(error);
-        const message = error instanceof Error ? error.message : "Something went wrong";
+
+        const message =
+            error instanceof Error
+                ? error.message
+                : "Something went wrong";
+
         res.status(400).json({ message });
     }
-}
+};
 
-export const getmybooking = async (req: Authrequest, res: Response): Promise<void> => {
-    try {
-        const booking = await Booking.find({User:req.user?._id}).populate("restuarent" , "name location image address slug").sort({Date:-1 , time:-1})
-        res.json(booking);
-    } catch (error) {
-        console.log(error);
-        const message = error instanceof Error ? error.message : "Something went wrong";
-        res.status(400).json({ message });
-    }
-}
 
-export const cancelbooking = async (req: Authrequest, res: Response): Promise<void> => {
+// CANCEL BOOKING
+export const cancelbooking = async (
+    req: Authrequest,
+    res: Response
+): Promise<void> => {
+
     try {
-        const booking = await Booking.findById(req.params.id)
-        if(!booking){
-            res.status(404).json({message:"Booking not found"})
+
+        const booking = await Booking.findById(req.params.id);
+
+        if (!booking) {
+            res.status(404).json({
+                message: "Booking not found"
+            });
             return;
         }
-        //verify the user has any booking 
-        if (booking.user.toString() !== req.user?._id.toString()) {
-        res.status(401).json({message: "Not authorized to cancel this booking"});
-        return;
+
+        if (
+            booking.user.toString() !==
+            req.user?._id.toString()
+        ) {
+            res.status(401).json({
+                message: "Not authorized to cancel this booking"
+            });
+            return;
         }
-        booking.status="cancelled";
+
+        booking.status = "cancelled";
+
         await booking.save();
 
-        const populatedBooking = await booking.populate("restuarent" , "name location image address")
+        const populatedBooking = await booking.populate(
+            "restaurant",
+            "name location image address"
+        );
+
         res.json(populatedBooking);
 
     } catch (error) {
+
         console.log(error);
-        const message = error instanceof Error ? error.message : "Something went wrong";
+
+        const message =
+            error instanceof Error
+                ? error.message
+                : "Something went wrong";
+
         res.status(400).json({ message });
     }
-}
+};

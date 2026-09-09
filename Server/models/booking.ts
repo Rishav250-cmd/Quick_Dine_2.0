@@ -20,7 +20,7 @@ export interface IBooking extends Document {
 const BookingSchema = new Schema<IBooking>(
     {
         user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-        restaurant: { type: Schema.Types.ObjectId, ref: "Restaurant", required: true },
+        restaurant: { type: Schema.Types.ObjectId, ref: "Restuarent", required: true },
         date: { type: Date, required: true },
         time: { type: String, required: true },
         guests: { type: Number, required: true, min: 1 },
