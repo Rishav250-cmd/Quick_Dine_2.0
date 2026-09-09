@@ -41,7 +41,7 @@ export const AppContextProvider = ({ children }: Props) => {
             setLoading(true);
             const res = await api.post("/auth/login" , {email , password});
             const {token :userToken  , ...userData} = res.data ;
-            localStorage.setItem("token","userToken")
+            localStorage.setItem("token",userToken)
             setToken(userToken)
             setUser(userData)
             toast.success(`Welcome back ${userData.name}`)
@@ -59,7 +59,7 @@ export const AppContextProvider = ({ children }: Props) => {
             setLoading(true);
             const res = await api.post("/auth/register" , {name , email , password , phone , role});
             const {token :userToken  , ...userData} = res.data ;
-            localStorage.setItem("token","userToken")
+            localStorage.setItem("token",userToken)
             setToken(userToken)
             setUser(userData)
             toast.success(`Welcome to Quick Dine Club`)

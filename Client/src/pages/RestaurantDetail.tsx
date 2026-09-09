@@ -32,7 +32,7 @@ export default function RestaurantDetail() {
         const fetchRestaurant = async () => {
             try {
                 setLoading(true)
-                const res = await api.get(`/restaurants/${slug}`)
+                const res = await api.get(`/restuarent/${slug}`)
                 setRestaurant(res.data)
                 //initaiize booking detail
                 const today = new Date().toISOString().split("T")[0];
@@ -55,7 +55,7 @@ export default function RestaurantDetail() {
             if(!restaurant?._id || !selectedDate) return ;
             try {
                 setLoadingSlots(true);
-                const res = await api.get(`/restaurants/${restaurant._id}/availability?date=${selectedDate}`)
+                const res = await api.get(`/restuarent/${restaurant._id}/availability?date=${selectedDate}`)
                 setSlotsAvailability(res.data)
             } catch (error:any) {
                 console.error(error)
