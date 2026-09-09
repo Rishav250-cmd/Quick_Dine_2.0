@@ -44,7 +44,7 @@ const seeddata = async () => {
             name : "Dubaihabibi",
             email:"dubai.07@gmail.com",
             role:"owner",
-            password: ownerpassword ,
+            password: "ownerpassword" ,
             phone:"777777777 "
         }) 
         console.log("creating restuarent....")
