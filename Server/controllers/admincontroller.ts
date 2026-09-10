@@ -21,7 +21,7 @@ export const getallrestaurent = async (req:Authrequest , res : Response):Promise
 }
 export const apporverestuarent = async (req:Authrequest , res : Response):Promise<void> => {
     try {
-        const status = req.body;
+        const { status } = req.body;
         if(!status || !["approved" , "rejected" , "pending"].includes(status)){
             res.status(400).json({message:"please provide the valid approval status"})
             return ;
